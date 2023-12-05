@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Losowanie Prezentów wersja 2023!</title>
+</head>
+
+<body>
+    <h1>Losowanie Prezentów</h1>
+    <input type="text" id="name" placeholder="Enter your name">
+    <button onclick="drawName()">Losuj imię</button>
+    <button onclick="resetDrawing()">Reset (tylko dla Admina!)</button>
+    <p id="result"></p>
+    <p id="drawnList"></p>
+
+    <script>
+        function drawName() {
+            var name = document.getElementById('name').value;
+            if (!name) {
+                document.getElementById('result').innerText = 'Proszę wpisać swoje imię';
+                return;
+            }
+            fetch('/draw', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: name }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        document.getElementById('result').innerText = data.error;
+                    } else {
+                        document.getElementById('result').innerText = 'Wylosowałeś/aś: ' + data.drawnName;
+                        updateDrawnList();
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+
+        function resetDrawing() {
+            fetch('/reset', {
+                method: 'POST',
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result').innerText = data.message;
+                    updateDrawnList();
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+
+        function updateDrawnList() {
+            // Implement fetching and displaying the list of people who have drawn
+        }
+    </script>
+</body>
+
+</html>
